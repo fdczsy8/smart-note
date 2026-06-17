@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能工作便签</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-default">
+    <div class="header">
+        <div class="header-left">
+            <div class="header-title-row">
+                <h1><i class="fas fa-clipboard-list"></i> 智能工作便签</h1>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="note-count">0</span>
+                    <span>个便签</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="completed-count">0</span>
+                    <span>已完成</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="header-links">
+                <a href="https://www.937788.xyz" target="_blank" class="header-link secondary-link">忆痕发布页</a>
+                <a href="README.html" class="header-link secondary-link">使用说明</a>
+            </div>
+            <div class="theme-selector">
+                <select id="theme-select">
+                    <option value="theme-default">默认主题</option>
+                    <option value="theme-green">绿色主题</option>
+                    <option value="theme-amber">琥珀主题</option>
+                    <option value="theme-dark">暗色主题</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="search-sort-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="搜索便签标题、内容或标签..." autocomplete="off">
+            </div>
+
+            <div class="sort-box">
+                <select id="sort-select">
+                    <option value="date-desc">按日期倒序 (最新的在前)</option>
+                    <option value="date-asc">按日期正序 (最早的在前)</option>
+                    <option value="title-asc">按标题 A-Z</option>
+                    <option value="title-desc">按标题 Z-A</option>
+                    <option value="completed">按完成状态</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="primary-btn" id="add-note-btn">
+                <i class="fas fa-plus"></i> 新建便签
+            </button>
+            <button class="secondary-btn" id="import-btn">
+                <i class="fas fa-upload"></i> 导入数据
+            </button>
+            <button class="secondary-btn" id="export-btn">
+                <i class="fas fa-download"></i> 导出数据
+            </button>
+            <button class="danger-btn" id="clear-all-btn">
+                <i class="fas fa-trash-alt"></i> 清空所有
+            </button>
+        </div>
+
+        <div class="controls-separator"></div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="active">未完成</button>
+            <button class="filter-btn" data-filter="completed">已完成</button>
+            <button class="filter-btn" data-filter="important">重要</button>
+            <button class="filter-btn" data-filter="today">今天</button>
+        </div>
+
+        <div class="page-size-row">
+            <span>每页</span>
+            <select id="page-size-select">
+                <option value="6">6个</option>
+                <option value="9" selected>9个</option>
+                <option value="12">12个</option>
+                <option value="15">15个</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="notes-container" id="notes-container">
+    </div>
+
+    <div class="pagination-container" id="pagination-container" style="display: none;">
+    </div>
+
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">新建便签</h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+
+            <form id="note-form">
+                <div class="form-group">
+                    <label for="note-title">标题</label>
+                    <input type="text" id="note-title" required maxlength="100" placeholder="输入便签标题..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="note-content">内容</label>
+                    <textarea id="note-content" required maxlength="2000" placeholder="输入便签内容..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="note-tags">标签 (用逗号分隔)</label>
+                    <input type="text" id="note-tags" placeholder="工作, 重要, 想法" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>便签颜色</label>
+                    <div class="color-options">
+                        <div class="color-option selected" data-color="#ffffff" style="background: #ffffff;" title="白"></div>
+                        <div class="color-option" data-color="#fecaca" style="background: #fecaca;" title="红"></div>
+                        <div class="color-option" data-color="#fed7aa" style="background: #fed7aa;" title="橙"></div>
+                        <div class="color-option" data-color="#fef08a" style="background: #fef08a;" title="黄"></div>
+                        <div class="color-option" data-color="#bbf7d0" style="background: #bbf7d0;" title="绿"></div>
+                        <div class="color-option" data-color="#a5f3fc" style="background: #a5f3fc;" title="青"></div>
+                        <div class="color-option" data-color="#bfdbfe" style="background: #bfdbfe;" title="蓝"></div>
+                        <div class="color-option" data-color="#ddd6fe" style="background: #ddd6fe;" title="紫"></div>
+                    </div>
+                    <input type="hidden" id="note-color" value="#ffffff">
+                </div>
+
+                <div class="form-group">
+                    <label>优先级</label>
+                    <div class="priority-options" id="priority-options">
+                        <span class="priority-option selected" data-priority="low">低</span>
+                        <span class="priority-option" data-priority="medium">中</span>
+                        <span class="priority-option" data-priority="high">高</span>
+                    </div>
+                    <input type="hidden" id="note-priority" value="low">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="secondary-btn" id="cancel-note">取消</button>
+                    <button type="submit" class="primary-btn" id="save-note">保存便签</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">导入数据</h2>
+                <button class="close-btn" id="close-import-modal">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label>方式一：选择文件或拖拽文件到下方区域</label>
+                <div class="drop-zone" id="import-drop-zone">
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 36px; color: var(--text-secondary); margin-bottom: 10px; display: block;"></i>
+                    <span style="color: var(--text-secondary);">点击选择文件，或将JSON文件拖拽到此处</span>
+                    <span id="import-file-name" style="color: var(--primary); font-weight: 600; margin-top: 6px; display: none;"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>方式二：粘贴JSON数据</label>
+                <textarea id="import-data" placeholder="在此粘贴之前导出的JSON数据..." rows="6"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <button type="button" class="secondary-btn" id="cancel-import">取消</button>
+                <button type="button" class="primary-btn" id="confirm-import">导入数据</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <div class="toast-message" id="toast-message">操作成功！</div>
+                <div class="toast-time" id="toast-time">刚刚</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+
+    <div class="beian-bar">
+        <div class="beian-pc">
+            <span class="beian-disclaimer">本站内容仅供学习和交流，非商业用途</span>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="beian-icp">浙ICP备2025187466号</a>
+            <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank" rel="noopener noreferrer" class="beian-gongan">
+                <img src="https://www.937788.xyz/gonganbeian.png" alt="公安备案" onerror="this.style.display='none'">
+                浙公网安备33030402001483号
+            </a>
+        </div>
+        <div class="beian-mobile">
+            <span class="beian-disclaimer">本站内容仅供学习和交流，非商业用途</span>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="beian-icp">浙ICP备2025187466号</a>
+            <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank" rel="noopener noreferrer" class="beian-gongan">
+                <img src="https://www.937788.xyz/gonganbeian.png" alt="公安备案" onerror="this.style.display='none'">
+                浙公网安备33030402001483号
+            </a>
+        </div>
+    </div>
+</body>
+</html>
