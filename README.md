@@ -2,7 +2,7 @@
 
 简约风格的在线便签记事工具，纯前端实现，不上传服务器，打开网页即可使用。数据存储在浏览器 `localStorage` 中，支持数据导入导出，方便迁移备份。
 
-演示地址：https://smartnote.937788.xyz/
+演示地址：[https://smartnote.937788.xyz/](https://fdczsy8.github.io/smart-note/)
 
 ## 核心功能
 
